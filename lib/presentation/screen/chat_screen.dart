@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paycar/presentation/message_screen.dart';
-import 'package:paycar/service/chat_service.dart';
- // Asegúrate de importar la pantalla de detalles
+import 'package:paycar/service/chat_service.dart'; // Asegúrate de importar la pantalla de detalles
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({Key? key}) : super(key: key);
@@ -38,7 +37,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 itemBuilder: (context, index) {
                   var usuario = snapshot.data![index];
                   String nombre = usuario['nombre'];
-                  int idReceptor = usuario['id'];  // Suponiendo que también tienes el ID en los datos
+                  int idReceptor = usuario['id']; // Suponiendo que también tienes el ID en los datos
                   return InkWell(
                     onTap: () {
                       Navigator.push(
@@ -51,11 +50,17 @@ class _ChatScreenState extends State<ChatScreen> {
                         ),
                       );
                     },
-                    child: Card(
-                      color: Colors.grey[900],
-                      shape: RoundedRectangleBorder(
+                    child: Container(
+                      margin: const EdgeInsets.only(bottom: 8.0),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF2F3640),
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: Colors.green, width: 1.5),
+                        border: Border(
+                          bottom: BorderSide(
+                            color: Colors.green,
+                            width: 1.5,
+                          ),
+                        ),
                       ),
                       child: ListTile(
                         leading: CircleAvatar(

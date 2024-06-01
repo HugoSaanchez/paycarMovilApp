@@ -23,8 +23,8 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   bool isLoading = true;
   bool hasError = false;
   double? diferenciaUsuarioActual;
-  String invitacionUrl = "";
-  int idConductor=0;
+  String? invitacionUrl;
+  int idConductor = 0;
 
   @override
   void initState() {
@@ -75,17 +75,25 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   Future<void> _fetchInvitacion() async {
     final url = await widget.grupoService.obtenerInvitacion(widget.grupo['id']);
     setState(() {
-      invitacionUrl = url!;
+      invitacionUrl = url;
     });
   }
 
-  Future<void> _generateInviteCode() async {
+ Future<void> _generateInviteCode() async {
+  try {
     final url = await widget.grupoService.crearInvitacion(widget.grupo['id']);
     setState(() {
-      invitacionUrl = url!;
+      invitacionUrl = url;
     });
-    _showInviteDialog();
+    Navigator.of(context).pop(); // Close the current dialog
+    // Reload the page
+    _initializeUser();
+
+  } catch (e) {
+    // Handle error if needed
   }
+}
+
 
   void _showInviteDialog() {
     showDialog(
@@ -101,7 +109,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                     IconButton(
                       icon: Icon(Icons.copy),
                       onPressed: () {
-                        Clipboard.setData(ClipboardData(text: invitacionUrl));
+                        Clipboard.setData(ClipboardData(text: invitacionUrl ?? ''));
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Código copiado al portapapeles')));
                       },
                     ),
@@ -112,6 +120,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
               TextButton(
                 child: Text('Generar enlace'),
                 onPressed: _generateInviteCode,
+               
               ),
             TextButton(
               child: Text('Cerrar'),
@@ -124,94 +133,91 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       },
     );
   }
-Future<void> _showValoracionComentarioDialog() async {
-  TextEditingController _comentarioController = TextEditingController();
-  int _valoracion = 1; // Valor inicial válido
 
-  // Obtener el id del conductor
-  final int idCond = idConductor;
-  final int idGrupo = widget.grupo['id'];
+  Future<void> _showValoracionComentarioDialog() async {
+    TextEditingController _comentarioController = TextEditingController();
+    int _valoracion = 1; // Valor inicial válido
 
-  // Obtener el comentario y la valoración actuales
-  String? comentarioActual = await widget.usuarioService.verComentario(idCond, idGrupo);
-  int? valoracionActual = await widget.usuarioService.verValoracion(idCond, idGrupo);
+    // Obtener el id del conductor
+    final int idCond = idConductor;
+    final int idGrupo = widget.grupo['id'];
 
-  // Si existen datos, inicializarlos
-  if (comentarioActual != null) {
-    _comentarioController.text = comentarioActual;
-  }
-  if (valoracionActual != null) {
-    _valoracion = valoracionActual;
-  }
+    // Obtener el comentario y la valoración actuales
+    String? comentarioActual = await widget.usuarioService.verComentario(idCond, idGrupo);
+    int? valoracionActual = await widget.usuarioService.verValoracion(idCond, idGrupo);
 
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return AlertDialog(
-        title: Text('Valorar y Comentar'),
-        content: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text('Valoración actual:'),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (index) {
-                    return IconButton(
-                      icon: Icon(
-                        index < _valoracion ? Icons.star : Icons.star_border,
-                        color: index < _valoracion ? Colors.yellow : null,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _valoracion = index + 1;
-                        });
-                      },
-                    );
-                  }),
-                ),
-                TextField(
-                  controller: _comentarioController,
-                  decoration: InputDecoration(
-                    hintText: 'Escribe tu comentario aquí',
+    // Si existen datos, inicializarlos
+    if (comentarioActual != null) {
+      _comentarioController.text = comentarioActual;
+    }
+    if (valoracionActual != null) {
+      _valoracion = valoracionActual;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Valorar y Comentar'),
+          content: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text('Valoración actual:'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(5, (index) {
+                      return IconButton(
+                        icon: Icon(
+                          index < _valoracion ? Icons.star : Icons.star_border,
+                          color: index < _valoracion ? Colors.yellow : null,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _valoracion = index + 1;
+                          });
+                        },
+                      );
+                    }),
                   ),
-                  maxLines: 3,
-                ),
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            child: Text('Cancelar'),
-            onPressed: () {
-              Navigator.of(context).pop();
+                  TextField(
+                    controller: _comentarioController,
+                    decoration: InputDecoration(
+                      hintText: 'Escribe tu comentario aquí',
+                    ),
+                    maxLines: 3,
+                  ),
+                ],
+              );
             },
           ),
-          TextButton(
-            child: Text('Enviar'),
-            onPressed: () async {
-              // Lógica para enviar la valoración y el comentario
-              int nuevaValoracion = _valoracion;
-              String nuevoComentario = _comentarioController.text;
+          actions: [
+            TextButton(
+              child: Text('Cancelar'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Enviar'),
+              onPressed: () async {
+                // Lógica para enviar la valoración y el comentario
+                int nuevaValoracion = _valoracion;
+                String nuevoComentario = _comentarioController.text;
 
-              // Aquí puedes agregar la lógica para enviar la nueva valoración y comentario al servidor
-              // Por ejemplo:
-              await widget.usuarioService.valorarUsuario(idCond, nuevaValoracion, idGrupo);
-              await widget.usuarioService.comentarUsuario(idCond, nuevoComentario, idGrupo);
+                // Aquí puedes agregar la lógica para enviar la nueva valoración y comentario al servidor
+                await widget.usuarioService.valorarUsuario(idCond, nuevaValoracion, idGrupo);
+                await widget.usuarioService.comentarUsuario(idCond, nuevoComentario, idGrupo);
 
-              Navigator.of(context).pop();
-            },
-          ),
-        ],
-      );
-    },
-  );
-}
-
-
-
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -277,7 +283,7 @@ Future<void> _showValoracionComentarioDialog() async {
                                       backgroundColor: Colors.green,
                                     ),
                                   ),
-                                if (rolUsuario == 'Pasajero')
+                                if (rolUsuario == 'pasajero')
                                   ElevatedButton(
                                     onPressed: diferenciaUsuarioActual == 0.0 ? null : _handlePagar,
                                     child: Text(diferenciaUsuarioActual == 0.0 ? 'Ya has pagado' : 'Pagar'),
@@ -285,7 +291,7 @@ Future<void> _showValoracionComentarioDialog() async {
                                       backgroundColor: diferenciaUsuarioActual == 0 ? Colors.grey : Colors.green,
                                     ),
                                   ),
-                                if (rolUsuario == 'Pasajero')
+                                if (rolUsuario == 'pasajero')
                                   ElevatedButton(
                                     onPressed: _showValoracionComentarioDialog,
                                     child: Text('Valorar y Comentar'),
@@ -293,7 +299,6 @@ Future<void> _showValoracionComentarioDialog() async {
                                       backgroundColor: Colors.green,
                                     ),
                                   ),
-                              
                               ],
                             );
                           }
@@ -318,9 +323,8 @@ Future<void> _showValoracionComentarioDialog() async {
       if (result != null) {
         String rol = result['rol'] ?? 'Desconocido'; // Provide default value
         String nombre = result['nombre'];
-        if(rol.contains("conductor"))
-        idConductor = result['id'];
-   
+        if (rol.contains("conductor")) idConductor = result['id'];
+
         double diferencia = diferencias[nombre] ?? 0;
         if (!usuariosPorRol.containsKey(rol)) {
           usuariosPorRol[rol] = [];
@@ -342,7 +346,7 @@ Future<void> _showValoracionComentarioDialog() async {
       Map<String, dynamic>? result = await widget.grupoService.actualizarCostepagado(widget.grupo['id'], int.parse(usuarioActualId!));
       if (result != null) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Pago realizado correctamente')));
-        await _fetchDiferenciaUsuarioActual(); 
+        await _fetchDiferenciaUsuarioActual();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al realizar el pago')));
       }
@@ -359,9 +363,9 @@ Future<void> _showValoracionComentarioDialog() async {
         style: TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold),
       ));
       widgets.addAll(usuariosPorRol['conductor']!.map((nombre) => Text(
-        nombre,
-        style: TextStyle(color: Colors.white, fontSize: 16),
-      )));
+            nombre,
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          )));
       usuariosPorRol.remove('conductor'); // Remover el conductor del mapa
       widgets.add(SizedBox(height: 10)); // Añadir espacio después de la lista de conductores
     }
@@ -373,9 +377,9 @@ Future<void> _showValoracionComentarioDialog() async {
         style: TextStyle(color: Colors.green, fontSize: 16, fontWeight: FontWeight.bold),
       ));
       widgets.addAll(nombres.map((nombre) => Text(
-        nombre,
-        style: TextStyle(color: Colors.white, fontSize: 16),
-      )));
+            nombre,
+            style: TextStyle(color: Colors.white, fontSize: 16),
+          )));
       widgets.add(SizedBox(height: 10)); // Añadir espacio entre grupos de roles
     });
 

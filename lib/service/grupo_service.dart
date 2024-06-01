@@ -21,11 +21,12 @@ class GrupoService extends ChangeNotifier {
     final Map<String, dynamic> groupData = {
       'titulo': titulo,
       'descripcion': descripcion,
-      'consumoGasolina': consumoGasolina,
-      'kilometrosRecorridos': kilometrosRecorridos,
-      'dineroGasolina': dineroGasolina,
+      'consumoGasolina': 0,
+      'kilometrosRecorridos': 0,
+      'dineroGasolina': 0,
       'activado': true,
       'borrado': false,
+   
     };
 
     final url = Uri.parse('$baseURL/crear-grupo');

@@ -164,7 +164,31 @@ Future<double> getMixtoPorMarcaAnioModeloVersion(String marca, int anio, String 
       return {"alquilado": 0};
     }
   }
+Future<String> alquilarVehiculo(String marca, int anio, String modelo, String version, String fechaInicio, String fechaFin) async {
+    final url = Uri.parse('$baseURL/alquilar?marca=$marca&anio=$anio&modelo=$modelo&version=$version&fechaInicio=$fechaInicio&fechaFin=$fechaFin');
+    final token = await storage.read(key: 'token');
 
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return 'Vehículo alquilado exitosamente';
+      } else {
+        print('Error al alquilar vehículo: ${response.statusCode}');
+        return 'Error al alquilar vehículo';
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      return 'Error de conexión';
+    }
+  }
 
 
 }

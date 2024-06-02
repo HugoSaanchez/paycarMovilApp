@@ -94,7 +94,24 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Fecha de inicio: $fechaInicioAlquiler, Fecha de fin: $fechaFinAlquiler')),
       );
-      // Aquí se puede añadir la lógica para registrar el alquiler
+
+      // Llamar al método de alquiler
+      final result = await datosVehiculosService.alquilarVehiculo(
+        selectedMarca!,
+        selectedAnio!,
+        selectedModelo!,
+        selectedVersion!,
+        fechaInicioAlquiler!,
+        fechaFinAlquiler!,
+      );
+
+      // Mostrar el resultado del alquiler
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result)),
+      );
+
+      // Actualizar el estado del alquiler después de la operación
+      _fetchAlquiladoStatus(selectedMarca!, selectedAnio!, selectedModelo!, selectedVersion!);
     }
   }
 

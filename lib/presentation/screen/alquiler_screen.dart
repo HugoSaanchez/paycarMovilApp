@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paycar/service/datosVehiculos_service.dart';
 
-
 class AlquilarScreen extends StatefulWidget {
   @override
   _AlquilarScreenState createState() => _AlquilarScreenState();
@@ -14,7 +13,9 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
   int? selectedAnio;
   String? selectedModelo;
   String? selectedVersion;
-  int? selectedMixto;
+  int? alquiladoStatus;
+  String? fechaInicioAlquiler;
+  String? fechaFinAlquiler;
 
   List<String> marcas = [];
   List<int> anios = [];
@@ -55,11 +56,46 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
     });
   }
 
-  Future<void> _fetchMixto(String marca, int anio, String modelo, String version) async {
-    final mixto = await datosVehiculosService.getAlquiladoStatusPorMarcaAnioModeloVersion(marca, anio, modelo, version);
+  Future<void> _fetchAlquiladoStatus(String marca, int anio, String modelo, String version) async {
+    final status = await datosVehiculosService.getAlquiladoStatusPorMarcaAnioModeloVersion(marca, anio, modelo, version);
     setState(() {
-      this.selectedMixto = mixto;
+      this.alquiladoStatus = status["alquilado"];
+      this.fechaInicioAlquiler = status.containsKey("fechaInicio") ? status["fechaInicio"] : null;
+      this.fechaFinAlquiler = status.containsKey("fechaFin") ? status["fechaFin"] : null;
     });
+  }
+
+  Future<void> _selectDateRange(BuildContext context) async {
+    DateTimeRange? picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2101),
+      builder: (BuildContext context, Widget? child) {
+        return Theme(
+          data: ThemeData.dark().copyWith(
+            colorScheme: ColorScheme.dark(
+              primary: Colors.green,
+              onPrimary: Colors.black,
+              surface: Colors.green,
+              onSurface: Colors.white,
+            ),
+            dialogBackgroundColor: Color(0xFF2F3640),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        fechaInicioAlquiler = picked.start.toString().split(' ')[0];
+        fechaFinAlquiler = picked.end.toString().split(' ')[0];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Fecha de inicio: $fechaInicioAlquiler, Fecha de fin: $fechaFinAlquiler')),
+      );
+      // Aquí se puede añadir la lógica para registrar el alquiler
+    }
   }
 
   @override
@@ -92,7 +128,9 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
                   selectedAnio = null;
                   selectedModelo = null;
                   selectedVersion = null;
-                  selectedMixto = null;
+                  alquiladoStatus = null;
+                  fechaInicioAlquiler = null;
+                  fechaFinAlquiler = null;
                   anios = [];
                   modelos = [];
                   versiones = [];
@@ -119,7 +157,9 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
                     selectedAnio = value;
                     selectedModelo = null;
                     selectedVersion = null;
-                    selectedMixto = null;
+                    alquiladoStatus = null;
+                    fechaInicioAlquiler = null;
+                    fechaFinAlquiler = null;
                     modelos = [];
                     versiones = [];
                   });
@@ -144,7 +184,9 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
                   setState(() {
                     selectedModelo = value;
                     selectedVersion = null;
-                    selectedMixto = null;
+                    alquiladoStatus = null;
+                    fechaInicioAlquiler = null;
+                    fechaFinAlquiler = null;
                     versiones = [];
                   });
                   if (value != null) {
@@ -167,28 +209,33 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
                 onChanged: (value) {
                   setState(() {
                     selectedVersion = value;
-                    selectedMixto = null;
+                    alquiladoStatus = null;
+                    fechaInicioAlquiler = null;
+                    fechaFinAlquiler = null;
                   });
                   if (value != null) {
-                    _fetchMixto(selectedMarca!, selectedAnio!, selectedModelo!, value);
+                    _fetchAlquiladoStatus(selectedMarca!, selectedAnio!, selectedModelo!, value);
                   }
                 },
               ),
-            if (selectedMixto != null)
+            if (alquiladoStatus != null)
               Text(
-                'Mixto: $selectedMixto',
+                alquiladoStatus == 1
+                    ? 'Estado: Está alquilado hasta $fechaFinAlquiler'
+                    : 'Estado: No está alquilado',
                 style: TextStyle(color: Colors.white, fontSize: 16),
               ),
             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Aquí se añadirá la lógica para alquilar el coche
-              },
-              child: Text('Alquilar Coche'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+            if (alquiladoStatus != null && alquiladoStatus != 1)
+              ElevatedButton(
+                onPressed: () {
+                  _selectDateRange(context);
+                },
+                child: Text('Alquilar Coche'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                ),
               ),
-            ),
             SizedBox(height: 20),
             Text(
               'Coches Alquilados:',
@@ -211,51 +258,3 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
     );
   }
 }
-
-class MainScreen extends StatefulWidget {
-  @override
-  _MainScreenState createState() => _MainScreenState();
-}
-
-class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
-  final List<Widget> _screens = [
-    // HomeScreen(),
-    // FriendsScreen(),
-    // ChatScreen(),
-    AlquilarScreen(),
-  ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color(0xFF2F3640),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Color(0xFF2F3640),
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.directions_car, color: Colors.green),
-            label: 'Alquiler',
-          ),
-          // Añadir más items aquí según sea necesario
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green,
-        unselectedItemColor: Colors.green,
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-}
-

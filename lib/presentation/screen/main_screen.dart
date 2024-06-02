@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paycar/presentation/screen/alquiler_screen.dart';
 import 'package:paycar/presentation/screen/chat_screen.dart';
 import 'package:paycar/presentation/screen/estadisticas_screen.dart';
 import 'package:paycar/presentation/screen/friends_screen.dart';
@@ -17,7 +18,8 @@ class _MainScreenState extends State<MainScreen> {
     const HomeScreen(),
     const FriendsScreen(),
     const ChatScreen(),
-    EstadisticasScreen()
+    EstadisticasScreen(),
+    AlquilarScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -54,6 +56,11 @@ class _MainScreenState extends State<MainScreen> {
           ),
            BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart, color: Colors.green), 
+            backgroundColor: Color(0xFF2F3640),
+            label: 'Estadisticas',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.car_rental, color: Colors.green), 
             backgroundColor: Color(0xFF2F3640),
             label: 'Estadisticas',
           ),

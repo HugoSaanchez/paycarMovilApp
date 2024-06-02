@@ -139,7 +139,31 @@ Future<double> getMixtoPorMarcaAnioModeloVersion(String marca, int anio, String 
     return 0.0;
   }
 }
+Future<int> getAlquiladoStatusPorMarcaAnioModeloVersion(String marca, int anio, String modelo, String version) async {
+    final url = Uri.parse('$baseURL/alquilado?marca=$marca&anio=$anio&modelo=$modelo&version=$version');
+    final token = await storage.read(key: 'token');
 
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return json.decode(response.body);
+      } else {
+        print('Error al obtener estado de alquiler: ${response.statusCode}');
+        return 0;
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      return 0;
+    }
+  }
 
 
 }

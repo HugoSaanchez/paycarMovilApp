@@ -114,11 +114,11 @@ class _FriendsScreenState extends State<FriendsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Amigos'),
-        backgroundColor: Colors.black,
+        title: const Text('Amigos',style: TextStyle(color: Colors.white),),
+        backgroundColor: Colors.green,
         actions: [
           IconButton(
-            icon: const Icon(Icons.person_add, color: Colors.green),
+            icon: const Icon(Icons.person_add, color: Colors.white),
             onPressed: _addFriend,
           ),
           FutureBuilder<int>(
@@ -127,7 +127,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return Stack(
                   children: [
-                    const Icon(Icons.group_add, color: Colors.green),
+                    const Icon(Icons.group_add, color: Colors.white),
                     Positioned(
                       right: 0,
                       child: Container(
@@ -153,13 +153,13 @@ class _FriendsScreenState extends State<FriendsScreen> {
                   ],
                 );
               } else if (snapshot.hasError) {
-                return const Icon(Icons.group_add, color: Colors.green);
+                return const Icon(Icons.group_add, color: Colors.white);
               } else {
                 final int numAmigos = snapshot.data ?? 0;
                 return Stack(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.group_add, color: Colors.green),
+                      icon: const Icon(Icons.group_add, color: Colors.white),
                       onPressed: _viewFriendRequests,
                     ),
                     if (numAmigos > 0)
@@ -192,7 +192,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
           ),
         ],
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: const Color(0xFF2F3640),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -210,13 +210,16 @@ class _FriendsScreenState extends State<FriendsScreen> {
                 itemCount: amigos.length,
                 itemBuilder: (context, index) {
                   final amigo = amigos[index];
-                  return Card(
-                    color: Colors.grey[900],
-                    shape: RoundedRectangleBorder(
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2F3640),
                       borderRadius: BorderRadius.circular(10),
-                      side: const BorderSide(
-                        color: Colors.green,
-                        width: 1.5,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.green,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                     child: ListTile(
@@ -225,7 +228,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                         style: const TextStyle(color: Colors.white),
                       ),
                       subtitle: Text(
-                        'Username: ${amigo['username']}\nRol: ${amigo['rol']}',
+                        'Username: ${amigo['username']}',
                         style: const TextStyle(color: Colors.white70),
                       ),
                       trailing: IconButton(

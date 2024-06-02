@@ -42,10 +42,12 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Solicitudes de Amistad'),
-        backgroundColor: Colors.black,
+        title: const Text('Solicitudes de Amistad',
+        style: TextStyle(color: Colors.white),),
+        
+        backgroundColor: Colors.green,
       ),
-      backgroundColor: Colors.black,
+      backgroundColor: Color(0xFF2F3640),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: FutureBuilder<List<Map<String, dynamic>>>(
@@ -63,13 +65,16 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
                 itemCount: solicitudes.length,
                 itemBuilder: (context, index) {
                   final solicitud = solicitudes[index];
-                  return Card(
-                    color: Colors.grey[900],
-                    shape: RoundedRectangleBorder(
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8.0),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF2F3640),
                       borderRadius: BorderRadius.circular(10),
-                      side: BorderSide(
-                        color: Colors.green,
-                        width: 1.5,
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.green,
+                          width: 1.5,
+                        ),
                       ),
                     ),
                     child: ListTile(

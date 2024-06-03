@@ -21,11 +21,13 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
   List<int> anios = [];
   List<String> modelos = [];
   List<String> versiones = [];
+  List<Map<String, dynamic>> vehiculosAlquilados = [];
 
   @override
   void initState() {
     super.initState();
     _fetchMarcas();
+    _fetchVehiculosAlquilados();
   }
 
   Future<void> _fetchMarcas() async {
@@ -62,6 +64,13 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
       this.alquiladoStatus = status["alquilado"];
       this.fechaInicioAlquiler = status.containsKey("fechaInicio") ? status["fechaInicio"] : null;
       this.fechaFinAlquiler = status.containsKey("fechaFin") ? status["fechaFin"] : null;
+    });
+  }
+
+  Future<void> _fetchVehiculosAlquilados() async {
+    final vehiculos = await datosVehiculosService.getVehiculosAlquilados();
+    setState(() {
+      this.vehiculosAlquilados = vehiculos;
     });
   }
 
@@ -112,6 +121,7 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
 
       // Actualizar el estado del alquiler después de la operación
       _fetchAlquiladoStatus(selectedMarca!, selectedAnio!, selectedModelo!, selectedVersion!);
+      _fetchVehiculosAlquilados();  // Actualizar la lista de vehículos alquilados
     }
   }
 
@@ -260,11 +270,12 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
             ),
             Expanded(
               child: ListView.builder(
-                itemCount: 2,
+                itemCount: vehiculosAlquilados.length,
                 itemBuilder: (context, index) {
+                  final vehiculo = vehiculosAlquilados[index];
                   return ListTile(
-                    title: Text('Coche ${index + 1}', style: TextStyle(color: Colors.white)),
-                    subtitle: Text('Hasta el: 2024-12-31', style: TextStyle(color: Colors.white70)),
+                    title: Text('${vehiculo["marca"]} ${vehiculo["modelo"]}', style: TextStyle(color: Colors.white)),
+                    subtitle: Text('Hasta el: ${vehiculo["fecha_fin"]}', style: TextStyle(color: Colors.white70)),
                   );
                 },
               ),

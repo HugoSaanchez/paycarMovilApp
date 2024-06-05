@@ -31,7 +31,11 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     super.initState();
     _initializeUser();
   }
-
+@override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _initializeUser();
+  }
   Future<void> _initializeUser() async {
     try {
       usuarioActualId = await obtenerUsuarioActualId();
@@ -46,6 +50,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       setState(() {
         isLoading = false;
       });
+    setState(() {}); 
     } catch (e) {
       setState(() {
         hasError = true;
@@ -94,7 +99,9 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
   }
 }
 
-
+void _refreshPage() {
+  setState(() {});
+}
   void _showInviteDialog() {
     showDialog(
       context: context,
@@ -233,6 +240,10 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
             icon: Icon(Icons.person_add, color: Colors.white),
             onPressed: _showInviteDialog,
           ),
+          IconButton(
+            icon: Icon(Icons.refresh, color: Colors.white),
+            onPressed: _refreshPage,
+          ),
         ],
       ),
       backgroundColor: Color(0xFF2F3640),
@@ -278,7 +289,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
                                         ),
                                       );
                                     },
-                                    child: Text('Calcular Costos'),
+                                    child: Text('Calcular Costos',style: TextStyle(color: Colors.white),),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green,
                                     ),

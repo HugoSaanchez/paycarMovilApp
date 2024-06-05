@@ -19,14 +19,26 @@ class _FriendsScreenState extends State<FriendsScreen> {
   @override
   void initState() {
     super.initState();
-    amigosFuture = usuarioService.verAmigosConfirmados();
-    numeroAmigosFuture = usuarioService.obtenerNumeroAmigos();
+    _loadFriends();
   }
 
   @override
   void dispose() {
     _textController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadFriends();
+  }
+
+  void _loadFriends() {
+    setState(() {
+      amigosFuture = usuarioService.verAmigosConfirmados();
+      numeroAmigosFuture = usuarioService.obtenerNumeroAmigos();
+    });
   }
 
   void _addFriend() {
@@ -91,10 +103,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                   );
                 }
                 Navigator.of(context).pop();
-                setState(() {
-                  amigosFuture = usuarioService.verAmigosConfirmados();
-                  numeroAmigosFuture = usuarioService.obtenerNumeroAmigos();
-                });
+                _loadFriends(); // Refresh friends list
               },
             ),
           ],
@@ -103,18 +112,21 @@ class _FriendsScreenState extends State<FriendsScreen> {
     );
   }
 
-  void _viewFriendRequests() {
-    Navigator.push(
+  void _viewFriendRequests() async {
+    final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const FriendRequestsScreen()),
     );
+    if (result == true) {
+      _loadFriends(); // Refresh friends list
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Amigos',style: TextStyle(color: Colors.white),),
+        title: const Text('Amigos', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green,
         actions: [
           IconButton(

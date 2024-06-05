@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:paycar/presentation/screen/addGrupo._screen.dart';
 import 'package:paycar/presentation/screen/group_screen.dart';
 import 'package:paycar/presentation/screen/login_screen.dart';
+import 'package:paycar/presentation/screen/perfil_screen.dart';
+
 import 'package:paycar/service/grupo_service.dart';
 import 'package:paycar/service/usuario_service.dart';
 
@@ -49,6 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
           });
         });
         break;
+      case 'Perfil':
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => ProfileScreen()),
+        );
+        break;
       case 'Cerrar Sesión':
         usuarioService.logout().then((_) {
           Navigator.pushReplacement(
@@ -67,8 +75,10 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: Colors.green,
         elevation: 0,
-        title: Text('PayCar',
-        style: TextStyle(color: Colors.white),),
+        title: Text(
+          'PayCar',
+          style: TextStyle(color: Colors.white),
+        ),
         actions: [
           PopupMenuButton<String>(
             onSelected: _onMenuOptionSelected,
@@ -81,6 +91,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       Icon(Icons.add, color: Colors.white),
                       SizedBox(width: 8),
                       Text('Crear Grupo', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+                PopupMenuItem<String>(
+                  value: 'Perfil',
+                  child: Row(
+                    children: [
+                      Icon(Icons.person, color: Colors.white),
+                      SizedBox(width: 8),
+                      Text('Perfil', style: TextStyle(color: Colors.white)),
                     ],
                   ),
                 ),
@@ -105,7 +125,6 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-           
             SizedBox(height: 20),
             if (showCards)
               Expanded(
@@ -117,7 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     } else if (snapshot.hasError) {
                       return Center(child: Text('Error: ${snapshot.error}'));
                     } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return Center(child: Text('No tienes grupos.', style: TextStyle(color: Colors.white)));
+                      return Center(
+                          child: Text('No tienes grupos.',
+                              style: TextStyle(color: Colors.white)));
                     } else {
                       final grupos = snapshot.data!;
                       return ListView.builder(

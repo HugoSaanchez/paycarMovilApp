@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:paycar/model/grupo_modelo.dart';
 import 'package:paycar/service/datosVehiculos_service.dart';
@@ -76,12 +78,19 @@ class _CalcularCostosScreenState extends State<CalcularCostosScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al calcular el costo del viaje')));
         }
-      } else {
+       Navigator.pop(context);
+        _afterPopCallback();
+            } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al actualizar el grupo')));
       }
     }
   }
-
+void _afterPopCallback() {
+  setState(() {
+    
+    // Actualiza el estado de la pantalla
+  });
+}
   Future<void> _showMarcasDialog() async {
     try {
       List<String> marcas = await datosVehiculosService.getMarcas();
@@ -371,7 +380,7 @@ class _CalcularCostosScreenState extends State<CalcularCostosScreen> {
                         SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: _saveChanges,
-                          child: Text('Guardar Cambios'),
+                          child: Text('Guardar Cambios', style: TextStyle(color: Colors.white),),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.green,
                           ),

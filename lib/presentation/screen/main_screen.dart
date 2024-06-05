@@ -13,15 +13,6 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  // Lista de widgets para las pantallas
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const FriendsScreen(),
-    const ChatScreen(),
-    EstadisticasScreen(),
-    AlquilarScreen()
-  ];
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -30,39 +21,57 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Widget selectedScreen;
+    switch (_selectedIndex) {
+      case 0:
+        selectedScreen = HomeScreen();
+        break;
+      case 1:
+        selectedScreen = FriendsScreen();
+        break;
+      case 2:
+        selectedScreen = ChatScreen();
+        break;
+      case 3:
+        selectedScreen = EstadisticasScreen();
+        break;
+      case 4:
+        selectedScreen = AlquilarScreen();
+        break;
+      default:
+        selectedScreen = HomeScreen();
+    }
+
     return Scaffold(
       backgroundColor: Color(0xFF2F3640),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: selectedScreen,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Color(0xFF2F3640),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.group, color: Colors.green), 
-                backgroundColor: Color(0xFF2F3640),
+                  backgroundColor: Color(0xFF2F3640),
             label: 'Grupo',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person, color: Colors.green), 
-                backgroundColor: Color(0xFF2F3640),
+                  backgroundColor: Color(0xFF2F3640),
             label: 'Amigos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat, color: Colors.green), 
-                backgroundColor: Color(0xFF2F3640),
+                  backgroundColor: Color(0xFF2F3640),
             label: 'Chat',
           ),
-           BottomNavigationBarItem(
+          BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart, color: Colors.green), 
-            backgroundColor: Color(0xFF2F3640),
+                  backgroundColor: Color(0xFF2F3640),
             label: 'Estadisticas',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.car_rental, color: Colors.green), 
-            backgroundColor: Color(0xFF2F3640),
-            label: 'Estadisticas',
+                  backgroundColor: Color(0xFF2F3640),
+            label: 'Alquiler',
           ),
         ],
         currentIndex: _selectedIndex,

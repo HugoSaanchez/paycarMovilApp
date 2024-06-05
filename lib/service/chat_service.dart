@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:paycar/model/mensaje_model.dart';
 
 class ChatService extends ChangeNotifier {
-  final String baseURL = 'http://10.0.2.2:8080';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = FlutterSecureStorage();
 
   Future<List<Map<String, dynamic>>> obtenerDetallesReceptores() async {

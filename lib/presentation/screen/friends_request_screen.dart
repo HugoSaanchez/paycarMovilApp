@@ -22,9 +22,7 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
     try {
       String result = await usuarioService.confirmarAmigo(idUsuario);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
-      setState(() {
-        solicitudesFuture = usuarioService.verAmigos(); // Refrescar la lista de solicitudes
-      });
+      Navigator.pop(context, true); // Return to the previous screen with a success flag
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -42,9 +40,10 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Solicitudes de Amistad',
-        style: TextStyle(color: Colors.white),),
-        
+        title: const Text(
+          'Solicitudes de Amistad',
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.green,
       ),
       backgroundColor: Color(0xFF2F3640),

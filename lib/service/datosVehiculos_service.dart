@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DatosVehiculosService extends ChangeNotifier {
-  final String baseURL = 'http://10.0.2.2:8080';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = FlutterSecureStorage();
 
   Future<List<String>> getMarcas() async {
@@ -190,5 +190,30 @@ Future<String> alquilarVehiculo(String marca, int anio, String modelo, String ve
     }
   }
 
+Future<List<Map<String, dynamic>>> getVehiculosAlquilados() async {
+    final url = Uri.parse('$baseURL/vehiculos-alquilados');
+    final token = await storage.read(key: 'token');
 
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> decoded = json.decode(response.body);
+        return decoded.cast<Map<String, dynamic>>();
+      } else {
+        print('Error al obtener vehículos alquilados: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      return [];
+    }
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:paycar/presentation/screen/main_screen.dart';
 import 'package:paycar/service/grupo_service.dart';
 import 'package:paycar/presentation/screen/home_screen.dart'; // Importar la pantalla de inicio
 
@@ -35,7 +36,7 @@ class AddGroupScreen extends StatelessWidget {
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeScreen()),
+        MaterialPageRoute(builder: (context) => MainScreen()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -48,7 +49,7 @@ class AddGroupScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Añadir Grupo'),
+        title: Text('Añadir Grupo',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.green, // Fondo negro
       ),
       body: Padding(
@@ -89,7 +90,7 @@ class AddGroupScreen extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 foregroundColor: Color(0xFF2F3640), backgroundColor: Colors.green, // Texto negro para el botón
               ),
-              child: Text('Crear Grupo'),
+              child: Text('Crear Grupo',style: TextStyle(color: Colors.white),),
             ),
           ],
         ),

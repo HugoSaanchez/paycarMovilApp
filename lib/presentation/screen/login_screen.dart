@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paycar/presentation/screen/main_screen.dart';
 import 'package:paycar/service/usuario_service.dart';
-import 'register_screen.dart'; 
-import 'home_screen.dart'; 
-
+import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,43 +9,42 @@ class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
+
 class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
-  final UsuarioService _usuarioService = UsuarioService(); 
+  final UsuarioService _usuarioService = UsuarioService();
 
-  
-  late String _email;
-  late String _password;
+  late String _email = '';
+  late String _password = '';
 
   // Método para realizar el inicio de sesión
   Future<void> _login() async {
-    // Lógica para el inicio de sesión, por ejemplo, usando el servicio de usuario
-    String? loginError = (await _usuarioService.login(_email, _password)) as String?;
-    if (loginError == null) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text('Error de inicio de sesión'),
-            content: Text(loginError!),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
+    if (_email.isEmpty || _password.isEmpty) {
+      // Mostrar un SnackBar con el mensaje de error si los campos están vacíos
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Por favor, ingrese correo electrónico y contraseña'),
+          backgroundColor: Colors.red,
+        ),
       );
-     
-    } else {
-       Navigator.pushReplacement( 
+      return;
+    }
+
+    // Lógica para el inicio de sesión, por ejemplo, usando el servicio de usuario
+    String? loginError = await _usuarioService.login(_email, _password);
+    if (loginError == null) {
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => MainScreen()),
       );
-      
+    } else {
+      // Mostrar un SnackBar con el mensaje de error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(loginError),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -61,10 +58,9 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            const Icon(
-              Icons.directions_car,
-              size: 80.0,
-              color: Colors.green, // Cambio de color a verde
+            Image.asset(
+              'assets/images/car.png',
+              height: 80.0,
             ),
             const SizedBox(height: 20.0),
             const Text(
@@ -73,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
               style: TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
-                color: Colors.white, // Cambio de color a verde
+                color: Colors.white, // Cambio de color a blanco
               ),
             ),
             const SizedBox(height: 40.0),
@@ -150,6 +146,9 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               child: const Text(
                 'Iniciar sesión',
+                style: TextStyle(
+                  color: Colors.white, // Color del texto
+                ),
               ),
             ),
             const SizedBox(height: 20.0),
@@ -161,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 );
               },
               style: TextButton.styleFrom(
-                foregroundColor: Colors.white, // Letras blancas
+                foregroundColor: Colors.white,
               ),
               child: const Text('¿No tienes una cuenta? Regístrate aquí'),
             ),

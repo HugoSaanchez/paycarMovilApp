@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class UsuarioService extends ChangeNotifier {
-  final String baseURL = 'http://10.0.2.2:8080';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = const FlutterSecureStorage();
   static String user = '';
   static String userId = '';
@@ -57,50 +57,49 @@ class UsuarioService extends ChangeNotifier {
   }
 
     
-  Future<String?> login(String username, String password) async {
-  final url = Uri.parse('$baseURL/login');
+     Future<String?> login(String username, String password) async {
+    final url = Uri.parse('$baseURL/login');
 
-  try {
-    final response = await http.post(
-  
-      url,
-      headers: {
-        'Content-type': 'application/x-www-form-urlencoded',
-        'Accept': 'application/json',
-      },
-      body: {
-        'user': username,
-        'password': password,
-        
-      },
-      
-    );
-   
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'Accept': 'application/json',
+        },
+        body: {
+          'user': username,
+          'password': password,
+        },
+      );
 
-    final Map<String, dynamic> decoded = json.decode(response.body);
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      await storage.write(key: 'token', value: decoded['token']);
-      await storage.write(key: 'name', value: decoded['name']);
-      await storage.write(key: 'userId', value: decoded['id'].toString());
-      user = decoded['email'];
-       
-      userId = decoded['id'].toString();
-      
-     
-    
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-      notifyListeners(); // Notifica a los oyentes en caso de que necesites actualizar alguna UI
-      return null; 
-    } else {
-      return 'Usuario o contraseña incorrectos';
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decoded = json.decode(response.body);
+
+        // Asegúrate de que las claves existen en el JSON decodificado antes de acceder a ellas
+        if (decoded.containsKey('token') && decoded.containsKey('nombre') && decoded.containsKey('id')) {
+          await storage.write(key: 'token', value: decoded['token']);
+          await storage.write(key: 'name', value: decoded['nombre']);
+          await storage.write(key: 'userId', value: decoded['id'].toString());
+          await storage.write(key: 'user', value: decoded['username']);
+
+          return null; 
+        } else {
+          return 'Respuesta del servidor inválida';
+        }
+      } else {
+        return 'Credenciales inválidas';
+      }
+    } catch (e) {
+      print("Error: ${e.toString()}");
+      return 'Error de red';
     }
-  } catch (e) {
-    print("Error: ${e.toString()}");
-
-    return 'Usuario o contraseña incorrectos';
   }
-}
+
+
 
   Future<List<Map<String, dynamic>>> verAmigos() async {
     final url = Uri.parse('$baseURL/ver-amigos');
@@ -398,6 +397,60 @@ Future<int?> verValoracion(int idConductor, int idGrupo) async {
     return null;
   }
 }
+
+Future<List<Map<String, dynamic>>> verTodosLosComentarios() async {
+    final url = Uri.parse('$baseURL/comentarios');
+    final token = await storage.read(key: 'token');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        List<dynamic> decoded = json.decode(response.body);
+        return decoded.cast<Map<String, dynamic>>();
+      } else {
+        print('Error al obtener comentarios: ${response.statusCode}');
+        return [];
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      return [];
+    }
+  }
+
+  Future<double> verMediaValoracion() async {
+    final url = Uri.parse('$baseURL/valoraciones');
+    final token = await storage.read(key: 'token');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+    print(response.statusCode);
+      if (response.statusCode == 200) {
+        final decoded = json.decode(response.body);
+        return decoded['mediaValoracion'] ?? 0.0;
+      } else {
+        print('Error al obtener media de valoraciones: ${response.statusCode}');
+        return 0.0;
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      return 0.0;
+    }
+  }
 
 
   }

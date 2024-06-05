@@ -258,7 +258,7 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
                 onPressed: () {
                   _selectDateRange(context);
                 },
-                child: Text('Alquilar Coche'),
+                child: Text('Alquilar Coche',style: TextStyle(color: Colors.white),),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green,
                 ),

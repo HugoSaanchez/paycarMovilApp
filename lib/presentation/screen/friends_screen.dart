@@ -133,6 +133,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
             icon: const Icon(Icons.person_add, color: Colors.white),
             onPressed: _addFriend,
           ),
+          
           FutureBuilder<int>(
             future: numeroAmigosFuture,
             builder: (context, snapshot) {

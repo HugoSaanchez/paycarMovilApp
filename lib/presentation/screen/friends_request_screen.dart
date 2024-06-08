@@ -40,6 +40,7 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text(
           'Solicitudes de Amistad',
           style: TextStyle(color: Colors.white),

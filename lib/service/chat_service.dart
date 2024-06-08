@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:paycar/model/mensaje_model.dart';
 
 class ChatService extends ChangeNotifier {
-  final String baseURL = 'https://paycar-x6i3.onrender.com/api';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = FlutterSecureStorage();
 
   Future<List<Map<String, dynamic>>> obtenerDetallesReceptores() async {
@@ -27,7 +27,8 @@ class ChatService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> data = jsonDecode(response.body);
+         String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> data = jsonDecode(stringResponse);
         List<Map<String, dynamic>> usuarios = data.map((item) => item as Map<String, dynamic>).toList();
         return usuarios;
       } else {
@@ -53,7 +54,8 @@ class ChatService extends ChangeNotifier {
     });
 
     if (response.statusCode == 200) {
-      List<dynamic> data = jsonDecode(response.body);
+       String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+      List<dynamic> data = jsonDecode(stringResponse);
       return data.map((json) => Mensaje.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load messages: ${response.statusCode}');

@@ -143,6 +143,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text("Chat con ${widget.nombreReceptor}", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Color(0xFF2F3640),

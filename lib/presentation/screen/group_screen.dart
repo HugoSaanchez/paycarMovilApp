@@ -31,11 +31,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     super.initState();
     _initializeUser();
   }
-@override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    _initializeUser();
-  }
+
   Future<void> _initializeUser() async {
     try {
       usuarioActualId = await obtenerUsuarioActualId();
@@ -50,7 +46,7 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
       setState(() {
         isLoading = false;
       });
-    setState(() {}); 
+      setState(() {}); 
     } catch (e) {
       setState(() {
         hasError = true;
@@ -84,24 +80,25 @@ class _GroupDetailsScreenState extends State<GroupDetailsScreen> {
     });
   }
 
- Future<void> _generateInviteCode() async {
-  try {
-    final url = await widget.grupoService.crearInvitacion(widget.grupo['id']);
-    setState(() {
-      invitacionUrl = url;
-    });
-    Navigator.of(context).pop(); // Close the current dialog
-    // Reload the page
-    _initializeUser();
+  Future<void> _generateInviteCode() async {
+    try {
+      final url = await widget.grupoService.crearInvitacion(widget.grupo['id']);
+      setState(() {
+        invitacionUrl = url;
+      });
+      Navigator.of(context).pop(); // Close the current dialog
+      // Reload the page
+      _initializeUser();
 
-  } catch (e) {
-    // Handle error if needed
+    } catch (e) {
+      // Handle error if needed
+    }
   }
-}
 
-void _refreshPage() {
-  setState(() {});
-}
+  void _refreshPage() {
+    setState(() {});
+  }
+
   void _showInviteDialog() {
     showDialog(
       context: context,
@@ -127,7 +124,6 @@ void _refreshPage() {
               TextButton(
                 child: Text('Generar enlace'),
                 onPressed: _generateInviteCode,
-               
               ),
             TextButton(
               child: Text('Cerrar'),
@@ -165,7 +161,7 @@ void _refreshPage() {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Valorar y Comentar'),
+          title: Text('Valorar y Comentar',style: TextStyle(color: Colors.white),),
           content: StatefulBuilder(
             builder: (BuildContext context, StateSetter setState) {
               return Column(
@@ -226,10 +222,87 @@ void _refreshPage() {
     );
   }
 
+  Future<void> _borrarGrupo() async {
+    try {
+      await widget.grupoService.borrarGrupo(widget.grupo['id']);
+      Navigator.of(context).pop(); // Close the dialog
+      Navigator.of(context).pop(); // Navigate back to the previous screen
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Grupo borrado correctamente')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al borrar el grupo')));
+    }
+  }
+
+  Future<void> _salirGrupo() async {
+    try {
+      final success = await widget.grupoService.salirGrupo(widget.grupo['id']);
+      if (success) {
+        Navigator.of(context).pop(); // Close the dialog
+        Navigator.of(context).pop(); // Navigate back to the previous screen
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Has salido del grupo exitosamente')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al salir del grupo')));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al salir del grupo')));
+    }
+  }
+
+  void _showDeleteDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.green, // Fondo verde
+          title: Text('Borrar Grupo', style: TextStyle(color: Colors.white)),
+          content: Text('¿Estás seguro de que deseas borrar este grupo?', style: TextStyle(color: Colors.white)),
+          actions: [
+            TextButton(
+              child: Text('Cancelar', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Borrar', style: TextStyle(color: Colors.white)),
+              onPressed: _borrarGrupo,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showSalirDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.green, // Fondo verde
+          title: Text('Salir del Grupo', style: TextStyle(color: Colors.white)),
+          content: Text('¿Estás seguro de que deseas salir de este grupo?', style: TextStyle(color: Colors.white)),
+          actions: [
+            TextButton(
+              child: Text('Cancelar', style: TextStyle(color: Colors.white)),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text('Salir', style: TextStyle(color: Colors.white)),
+              onPressed: _salirGrupo,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           " ${widget.grupo['titulo']}",
           style: TextStyle(color: Colors.white), // Color del texto del título en verde
@@ -240,9 +313,52 @@ void _refreshPage() {
             icon: Icon(Icons.person_add, color: Colors.white),
             onPressed: _showInviteDialog,
           ),
-          IconButton(
-            icon: Icon(Icons.refresh, color: Colors.white),
-            onPressed: _refreshPage,
+          PopupMenuButton<String>(
+            icon: Icon(Icons.more_vert, color: Colors.white),
+            color: Colors.green, // Color del menú desplegable
+            onSelected: (String result) {
+              if (result == 'refresh') {
+                _refreshPage();
+              } else if (result == 'delete') {
+                _showDeleteDialog();
+              } else if (result == 'salir') {
+                _showSalirDialog();
+              }
+            },
+            itemBuilder: (BuildContext context) => [
+              PopupMenuItem<String>(
+                value: 'refresh',
+                child: Row(
+                  children: [
+                    Icon(Icons.refresh, color: Colors.white),
+                    SizedBox(width: 10),
+                    Text('Refrescar', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
+              if (rolUsuario == 'conductor')
+                PopupMenuItem<String>(
+                  value: 'delete',
+                  child: Row(
+                    children: [
+                      Icon(Icons.delete, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text('Borrar', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+              if (rolUsuario == 'pasajero')
+                PopupMenuItem<String>(
+                  value: 'salir',
+                  child: Row(
+                    children: [
+                      Icon(Icons.exit_to_app, color: Colors.white),
+                      SizedBox(width: 10),
+                      Text('Salir del grupo', style: TextStyle(color: Colors.white)),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -297,7 +413,7 @@ void _refreshPage() {
                                 if (rolUsuario == 'pasajero')
                                   ElevatedButton(
                                     onPressed: diferenciaUsuarioActual == 0.0 ? null : _handlePagar,
-                                    child: Text(diferenciaUsuarioActual == 0.0 ? 'Ya has pagado' : 'Pagar'),
+                                    child: Text(diferenciaUsuarioActual == 0.0 ? 'Ya has pagado' : 'Pagar',style: TextStyle(color: Colors.white),),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: diferenciaUsuarioActual == 0 ? Colors.grey : Colors.green,
                                     ),
@@ -305,7 +421,7 @@ void _refreshPage() {
                                 if (rolUsuario == 'pasajero')
                                   ElevatedButton(
                                     onPressed: _showValoracionComentarioDialog,
-                                    child: Text('Valorar y Comentar'),
+                                    child: Text('Valorar y Comentar',style: TextStyle(color: Colors.white),),
                                     style: ElevatedButton.styleFrom(
                                       backgroundColor: Colors.green,
                                     ),
@@ -340,7 +456,13 @@ void _refreshPage() {
         if (!usuariosPorRol.containsKey(rol)) {
           usuariosPorRol[rol] = [];
         }
-        usuariosPorRol[rol]!.add('$nombre (Diferencia: $diferencia)');
+        String diferenciaTexto;
+        if (rol.contains("conductor")) {
+          diferenciaTexto = diferencia == 0.0 ? 'No te deben nada' : 'Te deben: ${diferencia.toStringAsFixed(2)}';
+        } else {
+          diferenciaTexto = diferencia == 0.0 ? 'No debe nada' : 'Estas en ${diferencia.toStringAsFixed(2)}';
+        }
+        usuariosPorRol[rol]!.add('$nombre - $diferenciaTexto');
       } else {
         if (!usuariosPorRol.containsKey('Desconocido')) {
           usuariosPorRol['Desconocido'] = [];

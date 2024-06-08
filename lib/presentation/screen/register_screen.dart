@@ -17,6 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   late TextEditingController _passwordController;
   late TextEditingController _confirmPasswordController;
   final UsuarioService _usuarioService = UsuarioService();
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -34,6 +35,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
+  }
+
+  bool _validatePassword(String password) {
+    final hasUppercase = password.contains(RegExp(r'[A-Z]'));
+    final hasDigits = password.contains(RegExp(r'\d'));
+    return hasUppercase && hasDigits;
+  }
+
+  Future<bool> _emailExists(String email) async {
+    final result = await _usuarioService.buscarPorEmail(email);
+    return result != null;
   }
 
   @override
@@ -168,7 +180,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 40.0),
+                SizedBox(height: 10.0),
+                if (_errorMessage.isNotEmpty)
+                  Text(
+                    _errorMessage,
+                    style: TextStyle(color: Colors.red, fontSize: 14.0),
+                  ),
+                SizedBox(height: 20.0),
                 ElevatedButton(
                   onPressed: () async {
                     final nombre = _nombreController.text;
@@ -176,50 +194,55 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     final password = _passwordController.text;
                     final confirmPassword = _confirmPasswordController.text;
 
-                    if (password == confirmPassword) {
-                      final registrado = await _usuarioService.register(nombre, email, password);
-                      if (registrado != null) {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (context) => LoginScreen()),
-                        );
-                      } else {
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: Text('Error de Registro'),
-                              content: Text('Ocurrió un error durante el registro.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      }
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Error de Contraseña'),
-                            content: Text('Las contraseñas no coinciden.'),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('OK'),
-                              ),
-                            ],
-                          );
-                        },
+                    setState(() {
+                      _errorMessage = '';
+                    });
+
+                    if (nombre.isEmpty || email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
+                      setState(() {
+                        _errorMessage = 'Por favor, completa todos los campos.';
+                      });
+                      return;
+                    }
+
+                    if (!RegExp(r'^[A-Z]').hasMatch(password)) {
+                      setState(() {
+                        _errorMessage = 'La contraseña debe comenzar con una letra mayúscula.';
+                      });
+                      return;
+                    }
+
+                    if (!_validatePassword(password)) {
+                      setState(() {
+                        _errorMessage = 'La contraseña debe contener al menos una letra mayúscula y un número.';
+                      });
+                      return;
+                    }
+
+                    if (password != confirmPassword) {
+                      setState(() {
+                        _errorMessage = 'Las contraseñas no coinciden.';
+                      });
+                      return;
+                    }
+
+                    if (await _emailExists(email)) {
+                      setState(() {
+                        _errorMessage = 'El correo electrónico ya está en uso.';
+                      });
+                      return;
+                    }
+
+                    final registrado = await _usuarioService.register(nombre, email, password);
+                    if (registrado == null) {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()),
                       );
+                    } else {
+                      setState(() {
+                        _errorMessage = 'Ocurrió un error durante el registro.';
+                      });
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -236,8 +259,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   child: Text(
                     'Registrarse',
                     style: TextStyle(
-                    color: Colors.white, // Color del texto
-                  ),
+                      color: Colors.white, // Color del texto
+                    ),
                   ),
                 ),
                 SizedBox(height: 20.0),

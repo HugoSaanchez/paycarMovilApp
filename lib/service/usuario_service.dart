@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class UsuarioService extends ChangeNotifier {
-  final String baseURL = 'https://paycar-x6i3.onrender.com/api';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = const FlutterSecureStorage();
   static String user = '';
   static String userId = '';
@@ -116,7 +116,9 @@ class UsuarioService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+          String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<Map<String, dynamic>>(); // Convertir a lista de mapas
       } else {
         print('Error al obtener amigos: ${response.statusCode}');
@@ -171,7 +173,8 @@ Future<Map<String, dynamic>?> buscarPorEmail(String email) async {
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body) as Map<String, dynamic>;
+      String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+      return json.decode(stringResponse) as Map<String, dynamic>;
     } else {
       print('Error al obtener usuario por email: ${response.statusCode}');
       return null;
@@ -227,7 +230,8 @@ Future<List<Map<String, dynamic>>> verAmigosConfirmados() async {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+          String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<Map<String, dynamic>>(); // Convertir a lista de mapas
       } else {
         print('Error al obtener amigos: ${response.statusCode}');
@@ -276,7 +280,8 @@ Future<List<Map<String, dynamic>>> verAmigosConfirmados() async {
       );
 
       if (response.statusCode == 200) {
-        final String responseBody = response.body;
+        String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final String responseBody = stringResponse;
         final String comentario = responseBody.replaceFirst('Comentario: ', '');
         return comentario;
       } else {
@@ -413,7 +418,8 @@ Future<List<Map<String, dynamic>>> verTodosLosComentarios() async {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+         String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<Map<String, dynamic>>();
       } else {
         print('Error al obtener comentarios: ${response.statusCode}');

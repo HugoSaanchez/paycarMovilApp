@@ -23,19 +23,20 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Estadísticas'),
+        automaticallyImplyLeading: false,
+        title: const Text('Estadísticas', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green,
       ),
-      backgroundColor: Color(0xFF2F3640),
+      backgroundColor: const Color(0xFF2F3640),
       body: FutureBuilder<Map<String, dynamic>?>(
         future: estadisticasFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}', style: TextStyle(color: Colors.red)));
+            return Center(child: Text('Error: ${snapshot.error}', style: const TextStyle(color: Colors.red)));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No se encontraron estadísticas.', style: TextStyle(color: Colors.white)));
+            return const Center(child: Text('No se encontraron estadísticas.', style: TextStyle(color: Colors.white)));
           } else {
             final estadisticas = snapshot.data!;
             final int numeroGrupos = estadisticas['numeroGrupos'];
@@ -51,16 +52,17 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-              
+                    Center(
+                      child: const Text('Grupos', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                    const SizedBox(height: 20),
                     SizedBox(
                       height: 300, // Ajusta la altura según sea necesario
                       child: BarChart(
                         BarChartData(
                           alignment: BarChartAlignment.spaceAround,
                           maxY: numeroGrupos.toDouble(),
-                          barTouchData: BarTouchData(
-                            
-                          ),
+                          barTouchData: BarTouchData(),
                           titlesData: FlTitlesData(
                             show: true,
                             bottomTitles: AxisTitles(
@@ -74,13 +76,13 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                                   Widget text;
                                   switch (value.toInt()) {
                                     case 0:
-                                      text = Text('Conductor', style: style);
+                                      text = const Text('Conductor', style: style);
                                       break;
                                     case 1:
-                                      text = Text('Pasajero', style: style);
+                                      text = const Text('Pasajero', style: style);
                                       break;
                                     default:
-                                      text = Text('', style: style);
+                                      text = const Text('', style: style);
                                       break;
                                   }
                                   return SideTitleWidget(
@@ -105,6 +107,16 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                                 },
                                 interval: 1,
                                 reservedSize: 28,
+                              ),
+                            ),
+                            topTitles: const AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: false,
+                              ),
+                            ),
+                            rightTitles: const AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: false,
                               ),
                             ),
                           ),
@@ -134,17 +146,19 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Row(
+                    const SizedBox(height: 20),
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         LegendItem(color: Colors.green, text: 'Conductor'),
                         LegendItem(color: Colors.blue, text: 'Pasajero'),
                       ],
                     ),
-                    SizedBox(height: 20),
-                    Text('Coste Total vs Coste Pagado', style: TextStyle(color: Colors.white, fontSize: 16)),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 20),
+                    Center(
+                      child: const Text('Pagos', style: TextStyle(color: Colors.white, fontSize: 16)),
+                    ),
+                    const SizedBox(height: 10),
                     SizedBox(
                       height: 300,
                       child: PieChart(
@@ -155,8 +169,8 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                               value: totalCostePagado,
                               title: '',
                               radius: 50,
-                              titleStyle: TextStyle(color: Colors.white, fontSize: 14),
-                              badgeWidget: touchedIndex == 0 ? Text('$totalCostePagado', style: TextStyle(color: Colors.white)) : null,
+                              titleStyle: const TextStyle(color: Colors.white, fontSize: 14),
+                              badgeWidget: touchedIndex == 0 ? Text('${totalCostePagado.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white)) : null,
                               badgePositionPercentageOffset: 1.2,
                             ),
                             PieChartSectionData(
@@ -164,8 +178,8 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                               value: debes,
                               title: '',
                               radius: 50,
-                              titleStyle: TextStyle(color: Colors.white, fontSize: 14),
-                              badgeWidget: touchedIndex == 1 ? Text('$debes', style: TextStyle(color: Colors.white)) : null,
+                              titleStyle: const TextStyle(color: Colors.white, fontSize: 14),
+                              badgeWidget: touchedIndex == 1 ? Text('${debes.toStringAsFixed(2)}', style: const TextStyle(color: Colors.white)) : null,
                               badgePositionPercentageOffset: 1.2,
                             ),
                           ],
@@ -190,8 +204,8 @@ class _EstadisticasScreenState extends State<EstadisticasScreen> {
                         ),
                       ),
                     ),
-                    SizedBox(height: 20),
-                    Row(
+                    const SizedBox(height: 20),
+                    const Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         LegendItem(color: Colors.green, text: 'Pagado'),
@@ -227,10 +241,10 @@ class LegendItem extends StatelessWidget {
           height: 16,
           color: color,
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         Text(
           text,
-          style: TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white),
         ),
       ],
     );

@@ -277,11 +277,12 @@ void _afterPopCallback() {
     _dineroController.dispose();
     super.dispose();
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "Calcular Costos",
           style: TextStyle(color: Colors.green),

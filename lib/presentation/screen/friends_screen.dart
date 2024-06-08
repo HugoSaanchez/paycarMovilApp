@@ -47,6 +47,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           backgroundColor: const Color(0xFF2F3640),
+          
           title: const Text(
             'Agregar Amigo',
             style: TextStyle(color: Colors.green),
@@ -126,6 +127,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Amigos', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.green,
         actions: [

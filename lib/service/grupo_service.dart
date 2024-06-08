@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 import 'package:paycar/model/grupo_modelo.dart';
 
 class GrupoService extends ChangeNotifier {
-  final String baseURL = 'https://paycar-x6i3.onrender.com/api';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = const FlutterSecureStorage();
 
   // Método para crear un grupo
@@ -72,7 +72,8 @@ class GrupoService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> decoded = json.decode(response.body);
+        String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final List<dynamic> decoded = json.decode(stringResponse);
         final List<Map<String, dynamic>> grupos = decoded.map((group) {
           return {
             'id': group['id'],
@@ -88,7 +89,8 @@ class GrupoService extends ChangeNotifier {
         }).toList();
         return grupos;
       } else {
-        final Map<String, dynamic> decoded = json.decode(response.body);
+      String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final Map<String, dynamic> decoded = json.decode(stringResponse);
         print('Error: ${decoded['message']}');
         return [];
       }
@@ -113,14 +115,17 @@ class GrupoService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> decoded = json.decode(response.body);
+        String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final Map<String, dynamic> decoded = json.decode(stringResponse);
         return {
           'id' : decoded['id'],
           'nombre': decoded['nombre'],
           'rol': decoded['rol']
         };
       } else {
-        final Map<String, dynamic> decoded = json.decode(response.body);
+        
+          String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final Map<String, dynamic> decoded = json.decode(stringResponse);
         print('Error: ${decoded['error']}');
         return null;
       }
@@ -146,7 +151,8 @@ Future<Map<String, dynamic>?> calcularCostoViaje(int grupoId) async {
     );
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> decoded = json.decode(response.body);
+     String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final Map<String, dynamic> decoded = json.decode(stringResponse);
       return {
         'costoViaje': decoded['costoViaje'],
         'tituloGrupo': decoded['tituloGrupo'],
@@ -212,10 +218,12 @@ Future<String?> editarGrupo(int grupoId, double consumoGasolina, int kilometrosR
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> decoded = json.decode(response.body);
+        String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final Map<String, dynamic> decoded = json.decode(stringResponse);
         return Grupo.fromJson(decoded);
       } else {
-        final Map<String, dynamic> decoded = json.decode(response.body);
+        String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        final Map<String, dynamic> decoded = json.decode(stringResponse);
         print('Error: ${decoded['message']}');
         return null;
       }
@@ -365,6 +373,61 @@ Future<String?> crearInvitacion(int grupoId) async {
       return true;
     } else {
       print('Error al unirse al grupo: ${response.body}');
+      return false;
+    }
+  }
+
+
+Future<bool> borrarGrupo(int id) async {
+  final String? token = await storage.read(key: 'token'); // Leer el token almacenado
+
+  final url = Uri.parse('$baseURL/grupo/borrar?id=$id');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token', // Incluye el token en la solicitud
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return true;
+    } else {
+      print('Error al borrar el grupo: ${response.body}');
+      return false;
+    }
+  } catch (e) {
+    print('Error de conexión: $e');
+    return false;
+  }
+}
+
+ Future<bool> salirGrupo(int grupoId) async {
+    final String? token = await storage.read(key: 'token'); // Leer el token almacenado
+
+    final url = Uri.parse('$baseURL/grupo/salir?grupoId=$grupoId');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token', // Incluye el token en la solicitud
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print('Error al salir del grupo: ${response.body}');
+        return false;
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
       return false;
     }
   }

@@ -129,7 +129,8 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Alquilar un Coche'),
+        automaticallyImplyLeading: false,
+        title: Text('Alquilar un Coche',style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.green,
       ),
       backgroundColor: Color(0xFF2F3640),

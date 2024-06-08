@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class DatosVehiculosService extends ChangeNotifier {
-  final String baseURL = 'https://paycar-x6i3.onrender.com/api';
+  final String baseURL = 'http://10.0.2.2:8080/api';
   final storage = FlutterSecureStorage();
 
   Future<List<String>> getMarcas() async {
@@ -22,7 +22,8 @@ class DatosVehiculosService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+           String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<String>();
       } else {
         print('Error al obtener marcas: ${response.statusCode}');
@@ -49,7 +50,8 @@ class DatosVehiculosService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+           String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<int>();
       } else {
         print('Error al obtener años: ${response.statusCode}');
@@ -76,7 +78,8 @@ class DatosVehiculosService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+           String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<String>();
       } else {
         print('Error al obtener modelos: ${response.statusCode}');
@@ -103,7 +106,8 @@ class DatosVehiculosService extends ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        List<dynamic> decoded = json.decode(response.body);
+           String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        List<dynamic> decoded = json.decode(stringResponse);
         return decoded.cast<String>();
       } else {
         print('Error al obtener versiones: ${response.statusCode}');
@@ -129,7 +133,8 @@ Future<double> getMixtoPorMarcaAnioModeloVersion(String marca, int anio, String 
     );
 
     if (response.statusCode == 200) {
-      return json.decode(response.body);
+         String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+      return json.decode(stringResponse);
     } else {
       print('Error al obtener mixto: ${response.statusCode}');
       return 0.0;
@@ -154,7 +159,8 @@ Future<double> getMixtoPorMarcaAnioModeloVersion(String marca, int anio, String 
       );
 
       if (response.statusCode == 200) {
-        return json.decode(response.body);
+           String stringResponse = const Utf8Decoder().convert(response.body.codeUnits);
+        return json.decode(stringResponse);
       } else {
         print('Error al obtener estado de alquiler: ${response.statusCode}');
         return {"alquilado": 0};

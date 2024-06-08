@@ -73,6 +73,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: Color(0xFF2F3640),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.green,
         elevation: 0,
         title: Text(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:paycar/service/usuario_service.dart';
+import 'main_screen.dart'; // Importa MainScreen
 
 class FriendRequestsScreen extends StatefulWidget {
   const FriendRequestsScreen({Key? key}) : super(key: key);
@@ -22,18 +23,25 @@ class _FriendRequestsScreenState extends State<FriendRequestsScreen> {
     try {
       String result = await usuarioService.confirmarAmigo(idUsuario);
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
-      Navigator.pop(context, true); // Return to the previous screen with a success flag
+      setState(() {
+        solicitudesFuture = usuarioService.verAmigos(); // Refrescar la lista de solicitudes
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
   void _rechazarSolicitud(int idUsuario) async {
-    // Aquí puedes implementar la lógica para rechazar la solicitud si tienes ese endpoint
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Solicitud de amistad rechazada')));
-    setState(() {
-      solicitudesFuture = usuarioService.verAmigos(); // Refrescar la lista de solicitudes
-    });
+    try {
+      String result = await usuarioService.rechazarAmigo(idUsuario);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainScreen(selectedIndex: 1)), // Navegar a MainScreen con la pestaña de Amigos seleccionada
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
   }
 
   @override

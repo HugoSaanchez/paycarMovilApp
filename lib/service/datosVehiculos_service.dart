@@ -222,4 +222,29 @@ Future<List<Map<String, dynamic>>> getVehiculosAlquilados() async {
       return [];
     }
   }
+   Future<String> actualizarEstadoAlquilado() async {
+    final url = Uri.parse('$baseURL/actualizar-alquilados');
+    final token = await storage.read(key: 'token');
+
+    try {
+      final response = await http.get(
+        url,
+        headers: {
+          'Content-type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        return 'Estado de alquiler actualizado exitosamente';
+      } else {
+        print('Error al actualizar estado de alquiler: ${response.statusCode}');
+        return 'Error al actualizar estado de alquiler';
+      }
+    } catch (e) {
+      print('Error de conexión: $e');
+      return 'Error de conexión';
+    }
+  }
 }

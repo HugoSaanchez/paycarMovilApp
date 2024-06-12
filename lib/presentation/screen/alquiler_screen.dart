@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:paycar/service/datosVehiculos_service.dart';
 
 class AlquilarScreen extends StatefulWidget {
+  final Key? key;
+
+  const AlquilarScreen({this.key}) : super(key: key);
   @override
   _AlquilarScreenState createState() => _AlquilarScreenState();
 }
@@ -26,8 +29,13 @@ class _AlquilarScreenState extends State<AlquilarScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchMarcas();
-    _fetchVehiculosAlquilados();
+    _actualizarEstadoAlquiladoYFetchData();
+  }
+
+  Future<void> _actualizarEstadoAlquiladoYFetchData() async {
+    await datosVehiculosService.actualizarEstadoAlquilado();
+    await _fetchMarcas();
+    await _fetchVehiculosAlquilados();
   }
 
   Future<void> _fetchMarcas() async {

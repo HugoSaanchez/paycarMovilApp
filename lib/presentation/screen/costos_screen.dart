@@ -78,19 +78,14 @@ class _CalcularCostosScreenState extends State<CalcularCostosScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al calcular el costo del viaje')));
         }
-       Navigator.pop(context);
-        _afterPopCallback();
+      Navigator.pop(context, true);
+        
             } else {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al actualizar el grupo')));
       }
     }
   }
-void _afterPopCallback() {
-  setState(() {
-    
-    // Actualiza el estado de la pantalla
-  });
-}
+
   Future<void> _showMarcasDialog() async {
     try {
       List<String> marcas = await datosVehiculosService.getMarcas();

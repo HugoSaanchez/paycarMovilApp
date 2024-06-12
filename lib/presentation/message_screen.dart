@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // Importa el paquete intl para formatear las fechas
 import 'package:flutter/services.dart'; // Para copiar al portapapeles
 import 'package:paycar/model/mensaje_model.dart';
+import 'package:paycar/presentation/screen/main_screen.dart';
 import 'package:paycar/service/chat_service.dart';
 import 'package:paycar/service/grupo_service.dart';
+import 'package:paycar/presentation/screen/chat_screen.dart';
 
 class MessageDetailsScreen extends StatefulWidget {
   final int idReceptor;
@@ -143,7 +145,15 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen(selectedIndex: 2)), // Navigate to ChatScreen
+            );
+          },
+        ),
         title: Text("Chat con ${widget.nombreReceptor}", style: TextStyle(color: Colors.white)),
         centerTitle: true,
         backgroundColor: Color(0xFF2F3640),

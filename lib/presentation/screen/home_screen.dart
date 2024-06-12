@@ -3,7 +3,6 @@ import 'package:paycar/presentation/screen/addGrupo._screen.dart';
 import 'package:paycar/presentation/screen/group_screen.dart';
 import 'package:paycar/presentation/screen/login_screen.dart';
 import 'package:paycar/presentation/screen/perfil_screen.dart';
-
 import 'package:paycar/service/grupo_service.dart';
 import 'package:paycar/service/usuario_service.dart';
 
@@ -151,36 +150,42 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Card(
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
-                                side: BorderSide(
-                                  color: Colors.green,
-                                  width: 2.0,
-                                ),
                               ),
                               color: Colors.transparent,
                               elevation: 0,
                               margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 0),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      grupo['titulo'],
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: Colors.green,
+                                      width: 2.0,
                                     ),
-                                    SizedBox(height: 5),
-                                    Text(
-                                      grupo['descripcion'],
-                                      style: TextStyle(
-                                        color: Colors.white70,
-                                        fontSize: 16,
+                                  ),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        grupo['titulo'],
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                      SizedBox(height: 5),
+                                      Text(
+                                        grupo['descripcion'],
+                                        style: TextStyle(
+                                          color: Colors.white70,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

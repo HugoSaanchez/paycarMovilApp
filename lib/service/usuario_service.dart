@@ -57,7 +57,7 @@ class UsuarioService extends ChangeNotifier {
   }
 
     
-     Future<String?> login(String username, String password) async {
+   Future<String?> login(String username, String password) async {
     final url = Uri.parse('$baseURL/login');
 
     try {
@@ -80,11 +80,12 @@ class UsuarioService extends ChangeNotifier {
         final Map<String, dynamic> decoded = json.decode(response.body);
 
         // Asegúrate de que las claves existen en el JSON decodificado antes de acceder a ellas
-        if (decoded.containsKey('token') && decoded.containsKey('nombre') && decoded.containsKey('id')) {
+        if (decoded.containsKey('token') && decoded.containsKey('nombre') && decoded.containsKey('id') && decoded.containsKey('rol')) {
           await storage.write(key: 'token', value: decoded['token']);
           await storage.write(key: 'name', value: decoded['nombre']);
           await storage.write(key: 'userId', value: decoded['id'].toString());
           await storage.write(key: 'user', value: decoded['username']);
+          await storage.write(key: 'rol', value: decoded['rol']); // Almacena el rol del usuario
 
           return null; 
         } else {
@@ -98,7 +99,6 @@ class UsuarioService extends ChangeNotifier {
       return 'Error de red';
     }
   }
-
 
 
   Future<List<Map<String, dynamic>>> verAmigos() async {
@@ -457,6 +457,31 @@ Future<List<Map<String, dynamic>>> verTodosLosComentarios() async {
       return 0.0;
     }
   }
+
+  Future<String> rechazarAmigo(int idAmigo) async {
+  final url = Uri.parse('$baseURL/rechazar-amigo?idAmigo=$idAmigo');
+  final token = await storage.read(key: 'token');
+
+  try {
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return 'Solicitud de amistad rechazada correctamente';
+    } else {
+      return 'Error al rechazar solicitud de amistad: ${response.statusCode}';
+    }
+  } catch (e) {
+    return 'Error de conexión: $e';
+  }
+}
+
 
 
   }

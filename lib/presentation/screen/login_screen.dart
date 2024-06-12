@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:paycar/presentation/screen/main_screen.dart';
 import 'package:paycar/service/usuario_service.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -13,6 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   bool _passwordVisible = false;
   final UsuarioService _usuarioService = UsuarioService();
+  final FlutterSecureStorage _storage = FlutterSecureStorage();
 
   late String _email = '';
   late String _password = '';
@@ -33,12 +35,23 @@ class _LoginScreenState extends State<LoginScreen> {
     // Lógica para el inicio de sesión, por ejemplo, usando el servicio de usuario
     String? loginError = await _usuarioService.login(_email, _password);
     if (loginError == null) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
-      );
+      String? userRole = await _storage.read(key: 'rol');
+      if (userRole == "ROL_USER") {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => MainScreen()),
+        );
+      } else if (userRole == "ROL_ADMIN") {
+        // Mostrar un SnackBar con el mensaje de error para administradores
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: Los administradores no pueden iniciar sesión en esta aplicación'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     } else {
-      // Mostrar un SnackBar con el mensaje de error
+      // Mostrar un SnackBar con el mensaje de error general
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(loginError),
@@ -58,9 +71,10 @@ class _LoginScreenState extends State<LoginScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            Image.asset(
-              'assets/images/car.png',
-              height: 80.0,
+            Icon(
+              Icons.directions_car,
+              size: 80.0,
+              color: Colors.green,
             ),
             const SizedBox(height: 20.0),
             const Text(

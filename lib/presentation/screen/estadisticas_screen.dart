@@ -3,6 +3,9 @@ import 'package:paycar/service/usuario_service.dart';
 import 'package:fl_chart/fl_chart.dart';
 
 class EstadisticasScreen extends StatefulWidget {
+   final Key? key;
+
+  const EstadisticasScreen({this.key}) : super(key: key);
   @override
   _EstadisticasScreenState createState() => _EstadisticasScreenState();
 }

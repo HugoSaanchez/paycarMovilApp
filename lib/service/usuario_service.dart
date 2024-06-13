@@ -4,7 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 
 class UsuarioService extends ChangeNotifier {
-  final String baseURL = 'http://10.0.2.2:8080/api';
+  final String baseURL = 'https://paycar-x6i3.onrender.com/api';
   final storage = const FlutterSecureStorage();
   static String user = '';
   static String userId = '';

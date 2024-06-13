@@ -84,7 +84,7 @@ Future<String> enviarMensaje(int idReceptor, String mensaje) async {
   );
 
   if (response.statusCode == 200) {
-    return "Mensaje enviado correctamente";
+    return "";
   } else {
     print('Error al enviar mensaje: ${response.body}');
     return 'Error al enviar mensaje: ${response.body}'; // Mostrar el cuerpo de la respuesta puede dar más información sobre el error

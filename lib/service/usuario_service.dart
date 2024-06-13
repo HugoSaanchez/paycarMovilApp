@@ -85,7 +85,10 @@ class UsuarioService extends ChangeNotifier {
           await storage.write(key: 'name', value: decoded['nombre']);
           await storage.write(key: 'userId', value: decoded['id'].toString());
           await storage.write(key: 'user', value: decoded['username']);
-          await storage.write(key: 'rol', value: decoded['rol']); // Almacena el rol del usuario
+          await storage.write(key: 'rol', value: decoded['rol']);
+       
+          await storage.write(key: 'activado', value: decoded['activado'].toString());
+          await storage.write(key: 'borrado', value: decoded['borrado'].toString());
 
           return null; 
         } else {

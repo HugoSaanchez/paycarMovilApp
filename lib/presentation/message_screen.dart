@@ -29,6 +29,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
   final TextEditingController _messageController = TextEditingController();
   List<Mensaje> mensajes = [];
   Timer? _pollingTimer;
+  bool isSendButtonEnabled = true; // Variable para controlar el estado del botón de enviar
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
       var newMessages = await chatService.obtenerMensajes(widget.idReceptor);
       if (newMessages.isNotEmpty && (mensajes.isEmpty || newMessages.last.hora != mensajes.last.hora)) {
         setState(() {
-          mensajes = newMessages; // Update the entire list to avoid duplicates
+          mensajes = newMessages; 
         });
       }
     });
@@ -65,13 +66,19 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
 
   void sendMessage() async {
     if (_messageController.text.isNotEmpty) {
+      setState(() {
+        isSendButtonEnabled = false; // Deshabilitar el botón al enviar
+      });
       try {
-        String response = await chatService.enviarMensaje(widget.idReceptor, _messageController.text.trim());
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(response)));
+        await chatService.enviarMensaje(widget.idReceptor, _messageController.text.trim());
         _messageController.clear();
         fetchInitialMessages();  // Refetch messages after sending to show new messages immediately
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error al enviar mensaje: $e')));
+        // Maneja el error si es necesario
+      } finally {
+        setState(() {
+          isSendButtonEnabled = true; // Habilitar el botón nuevamente después de enviar
+        });
       }
     }
   }
@@ -185,8 +192,8 @@ class _MessageDetailsScreenState extends State<MessageDetailsScreen> {
                   ),
                 ),
                 IconButton(
-                  icon: Icon(Icons.send, color: Colors.green),
-                  onPressed: sendMessage,
+                  icon: Icon(Icons.send, color: isSendButtonEnabled ? Colors.green : Colors.grey),
+                  onPressed: isSendButtonEnabled ? sendMessage : null,
                 ),
               ],
             ),

@@ -36,7 +36,27 @@ class _LoginScreenState extends State<LoginScreen> {
     String? loginError = await _usuarioService.login(_email, _password);
     if (loginError == null) {
       String? userRole = await _storage.read(key: 'rol');
-      if (userRole == "ROL_USER") {
+      String? userActivado = await _storage.read(key: 'activado');
+      String? userBorrado = await _storage.read(key: 'borrado');
+      
+      if(userBorrado == "true"){
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: El administrador te ha borrado la cuenta'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    
+      else if(userActivado == "false"){
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: Tienes la cuenta desactivada'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+     else  if (userRole == "ROL_USER") {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MainScreen()),
